@@ -1,0 +1,21 @@
+.question{
+  margin:auto;
+  background-color: lightgray;
+  text-align: center;
+  padding: 50px;
+  width: 200px;
+  border-radius: 20px;
+  font-size: 24px;
+
+}
+
+.choices{
+  margin: auto;
+  border-radius: 10px;
+  font-size: 24px;
+  background-color: lightgrey;
+  width: 200px;
+  padding: 50px;
+  margin-top: 250px;
+}
+
