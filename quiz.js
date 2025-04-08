@@ -1,62 +1,58 @@
-function RandomNumber(min, max){
-  return Math.floor(Math.random() * (max - min + 1 )) + min;
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-
-
-function generateQuestion(){
-
-  const num1 = RandomNumber (1, 10)
-  const num2 = RandomNumber (1, 10)
-
-  const operators = ['-','+','*']
-
-  const randomIndex = RandomNumber(0, operators.length - 1)
-  const operator = operators[randomIndex]
+function generateQuestion() {
+  const num1 = getRandomNumber(1, 10);
+  const num2 = getRandomNumber(1, 10);
+  const operations = ["+", "-", "*"];
+  const operation = operations[getRandomNumber(0, operations.length - 1)];
 
   let correctAnswer;
+  if (operation === "+") correctAnswer = num1 + num2;
+  if (operation === "-") correctAnswer = num1 - num2;
+  if (operation === "*") correctAnswer = num1 * num2;
 
-  if (operator === '+'){
-    correctAnswer = num1 + num2;
-    } else if (operator === '-') {
-     correctAnswer = num1 - num2;
-    } else if (operator === '*'){
-    correctAnswer = num1 * num2;
-  }
-
-  document.getElementById('question').innerText = `${num1} ${operator} ${num2}`;
-
-  return correctAnswer
+  return {
+      equation: `${num1} ${operation} ${num2}`,
+      correctAnswer: correctAnswer
+  };
 }
 
-correctAnswer = generateQuestio()
+function generateAnswers(correctAnswer) {
+  let answers = new Set();
+  answers.add(correctAnswer);
 
-function generateChoices(){
-  
-  let answers = [correctAnswer];
-
-   while (answers.length < 4) {
-    let wrongAnswer = RandomNumber(correctAnswer - 5, correctAnswer + 5);
-   if(!answers.includes(wrongAnswer));
-    answers.push(wrongAnswer);
+  while (answers.size < 6) {
+      answers.add(getRandomNumber(correctAnswer - 5, correctAnswer + 5));
   }
 
-  answers.sort(  () => Math.random() - 0.5);
+  return Array.from(answers).sort(() => Math.random() - 0.5);
+}
 
-  const buttons = document.querySelectorAll('.choices')
+function loadNewQuestion() {
+  const questionData = generateQuestion();
+  document.getElementById("question").innerText = questionData.equation;
 
-  buttons.forEach((button, index) => {
-    button.innerText = answers[index];
-    button.onclick =  () => checkAnswer(answers[index], correctAnswer);
+  const answerChoices = generateAnswers(questionData.correctAnswer);
+  const answersContainer = document.getElementById("answers");
+  answersContainer.innerHTML = "";
 
+  answerChoices.forEach(choice => {
+      const btn = document.createElement("div");
+      btn.classList.add("answer");
+      btn.innerText = choice;
+      btn.onclick = () => {
+          if (choice === questionData.correctAnswer) {
+              btn.classList.add("correct");
+              setTimeout(loadNewQuestion, 1000);
+          } else {
+              btn.classList.add("wrong");
+              setTimeout(() => btn.classList.remove("wrong"), 500);
+          }
+      };
+      answersContainer.appendChild(btn);
   });
 }
 
-
-
-
-
-console.log(generateQuestion())
-console.log(generateChoices())
-
-//document.getElementById('choices').innerText = correctAnswer;
+loadNewQuestion();
